@@ -6,10 +6,12 @@ import seaborn as sns
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from datetime import datetime
+import os
 
+# Streamlit page setup
 st.set_page_config(page_title="Milton Keynes Dashboard", layout="wide")
 st.title("Milton Keynes Crime Data and ONS Happiness Index (2022–2025)")
-st.subheader("This Dashboard has been created to identify if any correlations in the 2022-2024 Happiness Index and Milton Keynes Crime Rates.")
+st.subheader("This Dashboard identifies trends between the 2022–2024 Happiness Index and Milton Keynes Crime Rates.")
 
 # Load & Clean Crime Data
 @st.cache_data
@@ -78,14 +80,16 @@ def load_and_prepare_happiness(file_path):
 
     return df
 
-# Load data
+# File paths – change these to relative if uploading to the cloud
 crime_file = "/Users/shonamorris/Desktop/Milton Keynes Data 2024-2022.xlsx"
 happy_file = "/Users/shonamorris/Desktop/Happiness 2022 - 2024.xlsx"
+image_path = "/Users/shonamorris/Desktop/MK.png"
 
+# Load Data
 crime_df = load_and_clean_crime_data(crime_file)
 happy_df = load_and_prepare_happiness(happy_file)
 
-
+# Define Tabs
 tab0, tab1, tab2, tab3, tab4 = st.tabs([
     "🏠 Welcome",
     "📊 Crime Data",
@@ -94,12 +98,10 @@ tab0, tab1, tab2, tab3, tab4 = st.tabs([
     "😊 Happiness & Forecasting"
 ])
 
-# ---------------------------------------
-# 🏠 Home Page
-# ---------------------------------------
+# ----------- TAB 0: Welcome -------------
 with tab0:
     st.markdown("<h1 style='text-align: center; color: darkred;'> Milton Keynes Crime Data and ONS Happiness Index Dashboard</h1>", unsafe_allow_html=True)
-    st.image("/Users/shonamorris/Desktop/MK.png", use_column_width=True)  # ← make sure it's indented exactly like this
+    st.image(image_path, use_column_width=True)
 
     st.markdown("""
     <div style='text-align: center; font-size: 18px; margin-top: 20px;'>
@@ -109,16 +111,13 @@ with tab0:
     """, unsafe_allow_html=True)
 
     st.markdown("---")
-    st.markdown("""
+    st.markdown(f"""
     **Student Code:** 100353764  
     **Tools Used:** Streamlit, Python, Pandas, Seaborn, Scikit-learn  
-    **Last Updated:** {}
-    """.format(datetime.now().strftime("%Y-%m-%d %H:%M")))
+    **Last Updated:** {datetime.now().strftime("%Y-%m-%d %H:%M")}
+    """)
 
-
-# ---------------------------------------
-# 📊 Crime Data Tab
-# ---------------------------------------
+# ----------- TAB 1: Crime Data -------------
 with tab1:
     st.header("Crime in Milton Keynes (2022–2024)")
 
@@ -132,11 +131,11 @@ with tab1:
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Total Crimes Reported", f"{total_crimes:,}")
     col2.metric("Unique Months Recorded", unique_months)
-    col3.metric("Average Crimes per Month", f"{avg_crimes_per_month:.1f}")
-    col4.metric("Most Common Crime Category", f"{most_common_category} ({most_common_category_count})")
+    col3.metric("Avg Crimes/Month", f"{avg_crimes_per_month:.1f}")
+    col4.metric("Top Crime Category", f"{most_common_category} ({most_common_category_count})")
 
     fig_pie, ax_pie = plt.subplots(figsize=(8, 6))
-    crimes_by_category.plot.pie(autopct='%1.1f%%', startangle=140, ax=ax_pie, 
+    crimes_by_category.plot.pie(autopct='%1.1f%%', startangle=140, ax=ax_pie,
                                 colors=sns.color_palette("Reds", len(crimes_by_category)))
     ax_pie.set_ylabel('')
     ax_pie.set_title("Crime Category Proportions (2022–2024)")
@@ -172,15 +171,7 @@ with tab1:
     ax6.tick_params(axis='x', rotation=45)
     st.pyplot(fig6)
 
-    st.markdown("""
-    ---
-    **Summary:**
-
-    In Milton Keynes, Violence and Sexual Offences have consistently been the most frequently reported crimes from 2022 to 2024. January 2022 recorded the highest crime rate within this period. While crime rates have fluctuated over the years, recent months show a clear upward trend once again.
-    """)
-# ---------------------------------------   
-# 📈 New Crime Outcomes tab
-# ---------------------------------------
+# ----------- TAB 2: Crime Outcomes -------------
 with tab2:
     st.header("Crime Outcomes Over Time")
 
@@ -195,10 +186,8 @@ with tab2:
     ax_outcome.legend(bbox_to_anchor=(1.02, 1), loc='upper left')
     ax_outcome.grid(True, linestyle='--', alpha=0.6)
     st.pyplot(fig_outcome)
-    
-# ---------------------------------------
-# 🚨 Violent and Sexual Offences Tab
-# ---------------------------------------
+
+# ----------- TAB 3: Violent Crime -------------
 with tab3:
     st.header("Violence and Sexual Offences in Milton Keynes (2022–2024)")
 
@@ -224,22 +213,7 @@ with tab3:
     fig5.tight_layout()
     st.pyplot(fig5)
 
-    st.markdown("""
----
-**Summary:**  
-Violence and sexual offences have consistently been the most reported crimes in Milton Keynes between 2022 and 2024.  
-A noticeable upward trend in recent months highlights the importance of continued local policy attention and prevention strategies.
-""")
-# Author Notes
-st.markdown("---")
-footer_text = """
-*Data Sources:* Milton Keynes Crime Data (2022–2024), ONS Happiness Index (2022–2024)
-""".format(datetime.now().strftime("%Y-%m-%d %H:%M"))
-st.markdown(footer_text)
-
-# ---------------------------------------
-# 😊 Happiness Tab
-# ---------------------------------------
+# ----------- TAB 4: Happiness Forecasting -------------
 with tab4:
     st.header("Happiness Trends and Forecast (2022–2025)")
 
@@ -253,19 +227,11 @@ with tab4:
     ax7.grid(True)
     st.pyplot(fig7)
 
-    def season_label(q):
-        if 'Q1' in q: return 'Winter'
-        if 'Q2' in q: return 'Spring'
-        if 'Q3' in q: return 'Summer'
-        if 'Q4' in q: return 'Autumn'
-        return 'Unknown'
+    happy_df['Season'] = happy_df['TimePeriod'].apply(
+        lambda q: 'Winter' if 'Q1' in q else 'Spring' if 'Q2' in q else 'Summer' if 'Q3' in q else 'Autumn'
+    )
 
-    happy_df['Season'] = happy_df['TimePeriod'].apply(season_label)
-
-    # Interactive Feature
-    seasons = ['Winter', 'Spring', 'Summer', 'Autumn']
-    selected_seasons = st.multiselect("Select Seasons to Display", options=seasons, default=seasons)
-
+    selected_seasons = st.multiselect("Select Seasons to Display", ['Winter', 'Spring', 'Summer', 'Autumn'], default=['Winter', 'Spring', 'Summer', 'Autumn'])
     seasonal = happy_df.groupby('Season')['MeanHappiness'].mean().reindex(selected_seasons)
     fig8, ax8 = plt.subplots(figsize=(8, 5))
     seasonal.plot(kind='bar', color='lightgreen', ax=ax8)
@@ -278,7 +244,6 @@ with tab4:
     model = LinearRegression()
     train_df = happy_df[happy_df['MeanHappiness'].notna()]
     model.fit(train_df[['TimeIndex']], train_df['MeanHappiness'])
-
     r2 = model.score(train_df[['TimeIndex']], train_df['MeanHappiness'])
     pred_train = model.predict(train_df[['TimeIndex']])
     rmse = np.sqrt(mean_squared_error(train_df['MeanHappiness'], pred_train))
@@ -291,20 +256,15 @@ with tab4:
     happy_df['MeanHappinessFilled'] = happy_df['MeanHappiness'].combine_first(happy_df['PredictedHappiness'])
 
     last_train_idx = train_df['TimeIndex'].max()
-    plot_df = happy_df[happy_df['TimeIndex'] <= happy_df['TimeIndex'].max()].copy()
-
-    n_forecast = plot_df['MeanHappiness'].isna().sum()
+    n_forecast = happy_df['MeanHappiness'].isna().sum()
     if n_forecast > 0:
         adjustment = np.linspace(0.1, 0.2, n_forecast)
-        plot_df.loc[plot_df['MeanHappiness'].isna(), 'PredictedHappiness'] -= adjustment
-        plot_df['MeanHappinessFilled'] = plot_df['MeanHappiness'].combine_first(plot_df['PredictedHappiness'])
+        happy_df.loc[happy_df['MeanHappiness'].isna(), 'PredictedHappiness'] -= adjustment
+        happy_df['MeanHappinessFilled'] = happy_df['MeanHappiness'].combine_first(happy_df['PredictedHappiness'])
 
     fig9, ax9 = plt.subplots(figsize=(12, 6))
-    ax9.plot(plot_df['TimePeriod'], plot_df['MeanHappinessFilled'], marker='o', label='Actual + Predicted')
-
-    prediction_start_timeperiod = train_df.iloc[-1]['TimePeriod']
-    ax9.axvline(x=prediction_start_timeperiod, color='red', linestyle='--', label='Prediction Start')
-
+    ax9.plot(happy_df['TimePeriod'], happy_df['MeanHappinessFilled'], marker='o', label='Actual + Predicted')
+    ax9.axvline(x=train_df.iloc[-1]['TimePeriod'], color='red', linestyle='--', label='Prediction Start')
     ax9.set_title("Forecast of Mean Happiness Scores (2022–2025)")
     ax9.set_xlabel("Time Period")
     ax9.set_ylabel("Happiness Score")
@@ -314,11 +274,7 @@ with tab4:
     fig9.tight_layout()
     st.pyplot(fig9)
 
-
-    st.markdown("""
-**Summary:**
-The happiness score shows seasonal variation with spring and summer generally scoring higher than winter and autumn. The forecast suggests a slight downward trend in happiness scores through 2025.
-""")
-
-import os
+# Footer
+st.markdown("---")
+st.markdown("*Data Sources:* Milton Keynes Crime Data (2022–2024), ONS Happiness Index (2022–2024)")
 st.write("Current working directory:", os.getcwd())
