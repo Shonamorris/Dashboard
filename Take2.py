@@ -92,7 +92,7 @@ happy_df = load_and_prepare_happiness(happy_file)
 # Define Tabs
 tab0, tab1, tab2, tab3, tab4 = st.tabs([
     "🏠 Welcome",
-    "📊 Crime Data",
+    "🚓 Crime Data",
     "📈 Crime Outcomes",
     "🚨 Violent Crime Focus",
     "😊 Happiness & Forecasting"
@@ -117,7 +117,7 @@ with tab0:
     **Last Updated:** {datetime.now().strftime("%Y-%m-%d %H:%M")}
     """)
 
-# ----------- TAB 1: Crime Data -------------
+# ----------- TAB 1: 🚓 Crime Data -------------
 with tab1:
     st.header("Crime in Milton Keynes (2022–2024)")
 
@@ -178,7 +178,7 @@ with tab1:
     In Milton Keynes, Violence and Sexual Offences have consistently been the most frequently reported crimes from 2022 to 2024. January 2022 recorded the highest crime rate within this period. While crime rates have fluctuated over the years, recent months show a clear upward trend once again.
     """)
 
-# ----------- TAB 2: Crime Outcomes -------------
+# ----------- TAB 2: 📈 Crime Outcomes -------------
 with tab2:
     st.header("Crime Outcomes Over Time")
 
@@ -194,7 +194,7 @@ with tab2:
     ax_outcome.grid(True, linestyle='--', alpha=0.6)
     st.pyplot(fig_outcome)
 
-# ----------- TAB 3: Violent Crime -------------
+# ----------- TAB 3: 🚨 Violent Crime -------------
 with tab3:
     st.header("Violence and Sexual Offences in Milton Keynes (2022–2024)")
 
@@ -227,7 +227,7 @@ Violence and sexual offences have consistently been the most reported crimes in 
 A noticeable upward trend in recent months highlights the importance of continued local policy attention and prevention strategies.
 """)
 
-# ----------- TAB 4: Happiness Forecasting -------------
+# ----------- TAB 4: 😊 Happiness Forecasting -------------
 with tab4:
     st.header("Happiness Trends and Forecast (2022–2025)")
 
