@@ -231,6 +231,7 @@ A noticeable upward trend in recent months highlights the importance of continue
 with tab4:
     st.header("Happiness Trends and Forecast (2022–2025)")
 
+    # Line chart of actual happiness values
     actual = happy_df[happy_df['MeanHappiness'].notna()]
     fig7, ax7 = plt.subplots(figsize=(10, 5))
     ax7.plot(actual['TimePeriod'], actual['MeanHappiness'], marker='o')
@@ -241,11 +242,17 @@ with tab4:
     ax7.grid(True)
     st.pyplot(fig7)
 
+    # Assign season labels to each quarter
     happy_df['Season'] = happy_df['TimePeriod'].apply(
         lambda q: 'Winter' if 'Q1' in q else 'Spring' if 'Q2' in q else 'Summer' if 'Q3' in q else 'Autumn'
     )
 
-    selected_seasons = st.multiselect("Select Seasons to Display", ['Winter', 'Spring', 'Summer', 'Autumn'], default=['Winter', 'Spring', 'Summer', 'Autumn'])
+    # Seasonal bar chart (interactive)
+    selected_seasons = st.multiselect(
+        "Select Seasons to Display",
+        ['Winter', 'Spring', 'Summer', 'Autumn'],
+        default=['Winter', 'Spring', 'Summer', 'Autumn']
+    )
     seasonal = happy_df.groupby('Season')['MeanHappiness'].mean().reindex(selected_seasons)
     fig8, ax8 = plt.subplots(figsize=(8, 5))
     seasonal.plot(kind='bar', color='lightgreen', ax=ax8)
@@ -255,9 +262,12 @@ with tab4:
     ax8.grid(axis='y')
     st.pyplot(fig8)
 
+    # Linear Regression model
     model = LinearRegression()
     train_df = happy_df[happy_df['MeanHappiness'].notna()]
     model.fit(train_df[['TimeIndex']], train_df['MeanHappiness'])
+
+    # Model performance
     r2 = model.score(train_df[['TimeIndex']], train_df['MeanHappiness'])
     pred_train = model.predict(train_df[['TimeIndex']])
     rmse = np.sqrt(mean_squared_error(train_df['MeanHappiness'], pred_train))
@@ -266,16 +276,18 @@ with tab4:
     st.markdown(f"- **R²:** {r2:.3f}")
     st.markdown(f"- **RMSE:** {rmse:.3f}")
 
+    # Predict missing values (forecast)
     happy_df['PredictedHappiness'] = model.predict(happy_df[['TimeIndex']])
     happy_df['MeanHappinessFilled'] = happy_df['MeanHappiness'].combine_first(happy_df['PredictedHappiness'])
 
-    last_train_idx = train_df['TimeIndex'].max()
+    # Adjust predicted future values slightly down to simulate uncertainty
     n_forecast = happy_df['MeanHappiness'].isna().sum()
     if n_forecast > 0:
         adjustment = np.linspace(0.1, 0.2, n_forecast)
         happy_df.loc[happy_df['MeanHappiness'].isna(), 'PredictedHappiness'] -= adjustment
         happy_df['MeanHappinessFilled'] = happy_df['MeanHappiness'].combine_first(happy_df['PredictedHappiness'])
 
+    # Forecast plot
     fig9, ax9 = plt.subplots(figsize=(12, 6))
     ax9.plot(happy_df['TimePeriod'], happy_df['MeanHappinessFilled'], marker='o', label='Actual + Predicted')
     ax9.axvline(x=train_df.iloc[-1]['TimePeriod'], color='red', linestyle='--', label='Prediction Start')
@@ -287,7 +299,7 @@ with tab4:
     ax9.legend()
     fig9.tight_layout()
     st.pyplot(fig9)
-    
+
     st.markdown("""
 ---
 **Summary:**  
