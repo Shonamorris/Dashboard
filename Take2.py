@@ -170,6 +170,13 @@ with tab1:
     ax6.set_ylabel("Monthly Crime Count")
     ax6.tick_params(axis='x', rotation=45)
     st.pyplot(fig6)
+    
+    st.markdown("""
+    ---
+    **Summary:**
+
+    In Milton Keynes, Violence and Sexual Offences have consistently been the most frequently reported crimes from 2022 to 2024. January 2022 recorded the highest crime rate within this period. While crime rates have fluctuated over the years, recent months show a clear upward trend once again.
+    """)
 
 # ----------- TAB 2: Crime Outcomes -------------
 with tab2:
@@ -212,6 +219,13 @@ with tab3:
     ax5.grid(True, linestyle='--', alpha=0.6)
     fig5.tight_layout()
     st.pyplot(fig5)
+    
+    st.markdown("""
+---
+**Summary:**  
+Violence and sexual offences have consistently been the most reported crimes in Milton Keynes between 2022 and 2024.  
+A noticeable upward trend in recent months highlights the importance of continued local policy attention and prevention strategies.
+""")
 
 # ----------- TAB 4: Happiness Forecasting -------------
 with tab4:
@@ -273,6 +287,13 @@ with tab4:
     ax9.legend()
     fig9.tight_layout()
     st.pyplot(fig9)
+    
+    st.markdown("""
+---
+**Summary:**  
+Violence and sexual offences have consistently been the most reported crimes in Milton Keynes between 2022 and 2024.  
+A noticeable upward trend in recent months highlights the importance of continued local policy attention and prevention strategies.
+""")
 
 # Footer
 st.markdown("---")
