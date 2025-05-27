@@ -101,7 +101,7 @@ tab0, tab1, tab2, tab3, tab4 = st.tabs([
 # ----------- TAB 0: Welcome -------------
 with tab0:
     st.markdown("<h1 style='text-align: center; color: darkred;'> Milton Keynes Crime Data and ONS Happiness Index Dashboard</h1>", unsafe_allow_html=True)
-    st.image(image_path, use_column_width=True)
+    st.image(image_path, use_container_width=True)
 
     st.markdown("""
     <div style='text-align: center; font-size: 18px; margin-top: 20px;'>
