@@ -81,7 +81,7 @@ def load_and_prepare_happiness(file_path):
     return df
 
 # File paths – change these to relative if uploading to the cloud
-ccrime_file = "Milton Keynes Data 2024-2022.xlsx"
+crime_file = "Milton Keynes Data 2024-2022.xlsx"
 happy_file = "Happiness 2022 - 2024.xlsx"
 image_path = "MK.png"
 
